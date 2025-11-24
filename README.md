@@ -1,6 +1,6 @@
 # 📊 JPMorgan European Equity Thesis Monitor
 
-> A real-time investment dashboard validating JPMorgan's 2025 European equity overweight thesis
+> A real-time investment dashboard validating JPMorgan's 2024 European equity overweight thesis
 
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.31-FF4B4B.svg)](https://streamlit.io)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
@@ -8,7 +8,7 @@
 
 ## 🎯 Overview
 
-This dashboard provides institutional-grade monitoring and analysis of JPMorgan's 2025 European equity investment thesis. It combines traditional fundamental analysis with machine learning, quantitative backtesting, and alternative data to answer three critical questions:
+This dashboard provides institutional-grade monitoring and analysis of JPMorgan's 2024 European equity investment thesis. It combines traditional fundamental analysis with machine learning, quantitative backtesting, and alternative data to answer three critical questions:
 
 1. **Is the thesis working?** (CIO View)
 2. **Where is it working?** (PM View)
@@ -376,8 +376,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📧 Contact
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [your-profile](https://linkedin.com/in/yourprofile)
+- GitHub: [@VLSiddarth](https://github.com/VLSiddarth)
+- LinkedIn: [V.L.Siddarth](https://www.linkedin.com/in/v-l-siddarth-2147b9250/)
 - Email: vlsiddarth7@gmail.com
 
 ---
