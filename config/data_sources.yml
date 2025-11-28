@@ -1,0 +1,319 @@
+# Data Source Configurations
+# Centralized ticker mappings and API endpoints
+
+# European Indices
+indices:
+  stoxx_600:
+    ticker: "EXSA.DE"
+    name: "STOXX Europe 600"
+    currency: "EUR"
+    source: "yahoo"
+    fallback: "^STOXX"
+    
+  stoxx_50:
+    ticker: "STXE.DE"
+    name: "STOXX 50"
+    currency: "EUR"
+    source: "yahoo"
+    fallback: "^STOXX50E"
+    
+  dax:
+    ticker: "^GDAXI"
+    name: "DAX"
+    currency: "EUR"
+    source: "yahoo"
+    
+  cac_40:
+    ticker: "^FCHI"
+    name: "CAC 40"
+    currency: "EUR"
+    source: "yahoo"
+    
+  ftse_100:
+    ticker: "^FTSE"
+    name: "FTSE 100"
+    currency: "GBP"
+    source: "yahoo"
+    
+  ftse_mib:
+    ticker: "FTSEMIB.MI"
+    name: "FTSE MIB"
+    currency: "EUR"
+    source: "yahoo"
+    
+  ibex_35:
+    ticker: "^IBEX"
+    name: "IBEX 35"
+    currency: "EUR"
+    source: "yahoo"
+    
+  sp500:
+    ticker: "^GSPC"
+    name: "S&P 500"
+    currency: "USD"
+    source: "yahoo"
+    
+  nasdaq:
+    ticker: "^IXIC"
+    name: "NASDAQ"
+    currency: "USD"
+    source: "yahoo"
+
+# European Sector ETFs
+sectors:
+  banks:
+    ticker: "SX7E.DE"
+    name: "STOXX Banks"
+    currency: "EUR"
+    source: "yahoo"
+    
+  technology:
+    ticker: "SX8P.DE"
+    name: "STOXX Technology"
+    currency: "EUR"
+    source: "yahoo"
+    
+  industrials:
+    ticker: "SXNP.DE"
+    name: "STOXX Industrials"
+    currency: "EUR"
+    source: "yahoo"
+    
+  healthcare:
+    ticker: "SXDP.DE"
+    name: "STOXX Healthcare"
+    currency: "EUR"
+    source: "yahoo"
+    
+  utilities:
+    ticker: "SX6P.DE"
+    name: "STOXX Utilities"
+    currency: "EUR"
+    source: "yahoo"
+    
+  energy:
+    ticker: "SXEP.DE"
+    name: "STOXX Energy"
+    currency: "EUR"
+    source: "yahoo"
+    
+  materials:
+    ticker: "SXPP.DE"
+    name: "STOXX Basic Resources"
+    currency: "EUR"
+    source: "yahoo"
+    
+  consumer:
+    ticker: "SXRP.DE"
+    name: "STOXX Retail"
+    currency: "EUR"
+    source: "yahoo"
+
+# Thematic Baskets
+baskets:
+  german_fiscal:
+    name: "German Fiscal Play"
+    description: "German infrastructure beneficiaries"
+    stocks:
+      - ticker: "SIE.DE"
+        name: "Siemens"
+        weight: 0.15
+      - ticker: "SAP.DE"
+        name: "SAP"
+        weight: 0.15
+      - ticker: "ALV.DE"
+        name: "Allianz"
+        weight: 0.12
+      - ticker: "DBK.DE"
+        name: "Deutsche Bank"
+        weight: 0.12
+      - ticker: "BMW.DE"
+        name: "BMW"
+        weight: 0.12
+      - ticker: "VOW3.DE"
+        name: "Volkswagen"
+        weight: 0.12
+      - ticker: "BAS.DE"
+        name: "BASF"
+        weight: 0.12
+      - ticker: "BAYN.DE"
+        name: "Bayer"
+        weight: 0.10
+        
+  eu_defense:
+    name: "European Defense"
+    description: "European defense & aerospace"
+    stocks:
+      - ticker: "BA.L"
+        name: "BAE Systems"
+        weight: 0.20
+      - ticker: "RHM.DE"
+        name: "Rheinmetall"
+        weight: 0.20
+      - ticker: "HO.PA"
+        name: "Thales"
+        weight: 0.15
+      - ticker: "LDO.MI"
+        name: "Leonardo"
+        weight: 0.15
+      - ticker: "SAAB-B.ST"
+        name: "Saab"
+        weight: 0.15
+      - ticker: "AM.PA"
+        name: "Dassault"
+        weight: 0.15
+        
+  granolas:
+    name: "GRANOLAS"
+    description: "Europe's Magnificent 11"
+    stocks:
+      - ticker: "GSK.L"
+        name: "GSK"
+        weight: 0.091
+      - ticker: "ROG.SW"
+        name: "Roche"
+        weight: 0.091
+      - ticker: "ASML.AS"
+        name: "ASML"
+        weight: 0.091
+      - ticker: "NESN.SW"
+        name: "Nestle"
+        weight: 0.091
+      - ticker: "NOVN.SW"
+        name: "Novartis"
+        weight: 0.091
+      - ticker: "NOVO-B.CO"
+        name: "Novo Nordisk"
+        weight: 0.091
+      - ticker: "OR.PA"
+        name: "L'Oreal"
+        weight: 0.091
+      - ticker: "MC.PA"
+        name: "LVMH"
+        weight: 0.091
+      - ticker: "AZN.L"
+        name: "AstraZeneca"
+        weight: 0.091
+      - ticker: "SAP.DE"
+        name: "SAP"
+        weight: 0.091
+      - ticker: "SAN.PA"
+        name: "Sanofi"
+        weight: 0.091
+        
+  eu_banks:
+    name: "European Banks"
+    description: "Major European banks"
+    stocks:
+      - ticker: "BNP.PA"
+        name: "BNP Paribas"
+        weight: 0.14
+      - ticker: "SAN.MC"
+        name: "Santander"
+        weight: 0.14
+      - ticker: "BBVA.MC"
+        name: "BBVA"
+        weight: 0.14
+      - ticker: "INGA.AS"
+        name: "ING Group"
+        weight: 0.14
+      - ticker: "UCG.MI"
+        name: "UniCredit"
+        weight: 0.14
+      - ticker: "ISP.MI"
+        name: "Intesa Sanpaolo"
+        weight: 0.14
+      - ticker: "DBK.DE"
+        name: "Deutsche Bank"
+        weight: 0.08
+      - ticker: "GLE.PA"
+        name: "Societe Generale"
+        weight: 0.08
+
+# FRED Economic Indicators
+fred_series:
+  bond_yields:
+    fr_10y:
+      code: "IRLTLT01FRM156N"
+      name: "France 10-Year Bond"
+      unit: "percent"
+      
+    de_10y:
+      code: "IRLTLT01DEM156N"
+      name: "Germany 10-Year Bond"
+      unit: "percent"
+      
+    it_10y:
+      code: "IRLTLT01ITM156N"
+      name: "Italy 10-Year Bond"
+      unit: "percent"
+      
+    es_10y:
+      code: "IRLTLT01ESM156N"
+      name: "Spain 10-Year Bond"
+      unit: "percent"
+      
+    us_10y:
+      code: "DGS10"
+      name: "US 10-Year Treasury"
+      unit: "percent"
+      
+  macro_indicators:
+    eu_gdp:
+      code: "NAEXKP01EZQ652S"
+      name: "Euro Area GDP"
+      unit: "percent_change"
+      
+    eu_unemployment:
+      code: "LRHUTTTTEZM156S"
+      name: "Euro Area Unemployment"
+      unit: "percent"
+      
+    eu_hicp:
+      code: "CP0000EZ19M086NEST"
+      name: "Euro Area HICP"
+      unit: "index"
+      
+    us_gdp:
+      code: "GDP"
+      name: "US GDP"
+      unit: "billions"
+
+# News API Configuration
+news_api:
+  sources:
+    - "financial-times"
+    - "bloomberg"
+    - "reuters"
+    - "the-wall-street-journal"
+    
+  keywords:
+    - "Europe economy"
+    - "European Central Bank"
+    - "ECB"
+    - "STOXX"
+    - "German fiscal"
+    - "EU policy"
+    - "Euro area"
+    - "European markets"
+    
+  categories:
+    - "business"
+    - "technology"
+    
+  languages:
+    - "en"
+
+# Rate Limits (requests per minute)
+rate_limits:
+  yahoo_finance: 2000  # Unofficial limit
+  fred: 120  # 120 requests/minute
+  alpha_vantage: 5  # 5 requests/minute (free tier)
+  newsapi: 100  # 100 requests/day (free tier)
+
+# Data Validation Rules
+validation:
+  price_change_threshold: 0.15  # Max 15% daily change
+  volume_spike_threshold: 5.0  # 5x normal volume
+  missing_data_tolerance: 0.10  # Max 10% missing
+  outlier_std_threshold: 5.0  # 5 standard deviations

@@ -1,0 +1,286 @@
+groups:
+  # ============================================================
+  # 1. Core Infrastructure & Service Uptime
+  # ============================================================
+  - name: jpm_core_uptime
+    rules:
+      - alert: ServiceDown
+        expr: up{job=~"streamlit|api|websocket_server"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Service {{ $labels.job }} is DOWN on {{ $labels.instance }}"
+          description: |
+            The {{ $labels.job }} service on {{ $labels.instance }} has been unreachable
+            for more than 2 minutes.
+
+            This affects the JPM European Equity Thesis Monitor availability.
+          runbook_url: "https://your-docs.example.com/runbooks/service-down"
+
+      - alert: ServiceUnstable
+        expr: rate(up{job=~"streamlit|api|websocket_server"}[5m]) < 0
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Service {{ $labels.job }} is unstable on {{ $labels.instance }}"
+          description: |
+            The availability status of {{ $labels.job }} on {{ $labels.instance }}
+            has been flapping over the last 10 minutes.
+            Investigate potential restarts, crashes, or deployment issues.
+
+  # ============================================================
+  # 2. API & Application Errors
+  # ============================================================
+  - name: jpm_api_application_health
+    rules:
+      - alert: HighAPIErrorRate
+        expr: |
+          rate(jpm_api_request_errors_total[5m])
+            /
+          rate(jpm_api_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          team: api
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "High API error rate for JPM dashboard"
+          description: |
+            API error rate exceeded 5% over the last 5 minutes.
+            Check logs for app.py / api.py and upstream data sources.
+
+      - alert: ModerateAPIErrorRate
+        expr: |
+          rate(jpm_api_request_errors_total[15m])
+            /
+          rate(jpm_api_requests_total[15m]) > 0.02
+        for: 15m
+        labels:
+          severity: warning
+          team: api
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Elevated API error rate for JPM dashboard"
+          description: |
+            API error rate exceeded 2% over the last 15 minutes.
+            User experience may be partially degraded.
+
+      - alert: NoSignalsGenerated
+        expr: increase(jpm_signals_generated_total[1h]) == 0
+        for: 1h
+        labels:
+          severity: warning
+          team: quant
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "No trade signals generated in the last hour"
+          description: |
+            The signal engine has not generated any new signals in the past hour.
+            This may indicate:
+            - Data pipeline issues
+            - Stuck scheduler
+            - Logic errors in signal generator
+
+  # ============================================================
+  # 3. Data Freshness & Pipeline Health
+  # ============================================================
+  - name: jpm_data_freshness
+    rules:
+      - alert: MarketDataStale
+        expr: |
+          (time() - jpm_data_last_update_timestamp{type="market"}) > 900
+        for: 10m
+        labels:
+          severity: critical
+          team: data
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Market data is stale for JPM dashboard"
+          description: |
+            Market data has not been updated for more than 15 minutes.
+            This breaks real-time monitoring and may invalidate signals.
+
+      - alert: MacroDataStale
+        expr: |
+          (time() - jpm_data_last_update_timestamp{type="macro"}) > 86400
+        for: 30m
+        labels:
+          severity: warning
+          team: data
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Macro data (FRED/ECB) is stale"
+          description: |
+            Macro data has not been refreshed for more than 24 hours.
+            The Strategist View may show outdated macro conditions.
+
+      - alert: NewsSentimentStale
+        expr: |
+          (time() - jpm_data_last_update_timestamp{type="news"}) > 3600
+        for: 30m
+        labels:
+          severity: warning
+          team: data
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "News sentiment feed is stale"
+          description: |
+            News & sentiment data are more than 1 hour old.
+            Sentiment dashboard and AI components may not reflect current headlines.
+
+  # ============================================================
+  # 4. Risk Metrics & Portfolio Limits
+  # ============================================================
+  - name: jpm_risk_limits
+    rules:
+      - alert: ExceededValueAtRiskLimit
+        expr: jpm_risk_var_95 > 0.03
+        for: 15m
+        labels:
+          severity: critical
+          team: risk
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "95% daily VaR exceeds 3% limit"
+          description: |
+            The 95% one-day Value-at-Risk exceeds the 3% threshold.
+            Review portfolio exposures and ensure risk limits are respected.
+
+      - alert: ElevatedExpectedShortfall
+        expr: jpm_risk_cvar_95 > 0.04
+        for: 15m
+        labels:
+          severity: warning
+          team: risk
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "95% Expected Shortfall above 4%"
+          description: |
+            The 95% Expected Shortfall (CVaR) is above 4%.
+            This indicates heavy tail risk in the current portfolio.
+
+      - alert: ExtremeFragmentationRisk
+        expr: jpm_fr_de_spread_bps > 80
+        for: 30m
+        labels:
+          severity: critical
+          team: macro
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "FR-DE spread above 80 bps (EU fragmentation risk)"
+          description: |
+            France–Germany 10Y spread has exceeded 80bps.
+            This is the 'danger zone' for EU fragmentation risk as defined
+            in the JPM thesis dashboard.
+
+      - alert: SevereEuropeanUnderperformance
+        expr: jpm_eu_us_relative_perf < -0.10
+        for: 1h
+        labels:
+          severity: warning
+          team: macro
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Europe underperforming US by more than 10%"
+          description: |
+            Relative performance metric (STOXX vs S&P) shows Europe
+            underperforming the US by more than 10% over the monitoring window.
+            Reassess the JPM overweight Europe thesis.
+
+  # ============================================================
+  # 5. Database & Cache Health
+  # ============================================================
+  - name: jpm_database_health
+    rules:
+      - alert: TimescaleDBDown
+        expr: up{job="timescale"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+          component: timescale
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "TimescaleDB is down"
+          description: |
+            TimescaleDB is not reachable.
+            Historical time-series data (prices, macro, signals) will be unavailable.
+
+      - alert: MongoDBDown
+        expr: up{job="mongodb"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+          component: mongodb
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "MongoDB is down"
+          description: |
+            MongoDB is not reachable.
+            Portfolio definitions, user configurations, or unstructured data may be impacted.
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          team: platform
+          component: redis
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Redis cache is down"
+          description: |
+            Redis cache is not reachable.
+            The dashboard may still work but with higher latency
+            and heavier load on upstream data sources.
+
+  # ============================================================
+  # 6. Resource Utilization (Nodes / Containers)
+  # ============================================================
+  - name: jpm_resource_utilization
+    rules:
+      - alert: HighCPUUsage
+        expr: avg by (instance) (rate(process_cpu_seconds_total[5m])) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: |
+            CPU usage above 80% for more than 10 minutes.
+            Consider scaling out or investigating heavy queries/backtests.
+
+      - alert: HighMemoryUsage
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.15
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Low available memory on {{ $labels.instance }}"
+          description: |
+            Available memory is below 15% of total for more than 10 minutes.
+            May cause OOM kills or degraded performance.
+
+      - alert: DiskSpaceLow
+        expr: node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes < 0.10
+        for: 15m
+        labels:
+          severity: warning
+          team: platform
+          dashboard: jpm-eu-equity
+        annotations:
+          summary: "Disk space low on {{ $labels.instance }}"
+          description: |
+            Less than 10% disk space remaining.
+            Historical data, logs, or exports may fail to write soon.

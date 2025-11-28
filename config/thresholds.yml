@@ -1,0 +1,201 @@
+# Alert Thresholds Configuration
+# Defines when to trigger signals and alerts
+
+# Trading Signal Thresholds
+signals:
+  relative_performance:
+    strong_buy: -5.0  # EU underperforming by >5%
+    buy: 0.0  # EU underperforming
+    hold_lower: 0.0
+    hold_upper: 5.0
+    take_profit: 5.0  # EU outperforming by >5%
+    strong_sell: 10.0  # EU outperforming by >10%
+    
+  valuation:
+    pe_gap_wide: 9.0  # P/E gap >9x → opportunity
+    pe_gap_normal: 7.0
+    pe_gap_narrow: 5.0  # P/E gap <5x → overvalued
+    
+  momentum:
+    rsi_oversold: 30
+    rsi_neutral_lower: 40
+    rsi_neutral_upper: 60
+    rsi_overbought: 70
+    
+  volatility:
+    vix_low: 12  # Low vol → complacency
+    vix_normal: 20
+    vix_elevated: 30  # High vol → fear
+    vix_extreme: 40
+
+# Risk Alert Thresholds
+risk:
+  fragmentation:
+    fr_de_spread:
+      safe: 40  # <40 bps = low risk
+      warning: 80  # 40-80 bps = moderate
+      danger: 85  # >85 bps = critical
+      
+    it_de_spread:
+      safe: 100
+      warning: 150
+      danger: 200
+      
+    es_de_spread:
+      safe: 80
+      warning: 120
+      danger: 150
+      
+  macro:
+    credit_impulse:
+      target: 3.0  # >3% = positive
+      neutral: 0.0
+      negative: -3.0  # <-3% = recession risk
+      
+    eps_growth_2026:
+      target: 12.0  # >12% = thesis working
+      neutral: 8.0
+      below_target: 5.0
+      
+    ecb_rate:
+      restrictive: 4.0  # >4% = tight policy
+      neutral: 2.5
+      accommodative: 2.0  # <2% = loose policy
+      
+  var_limits:
+    portfolio_var_95: 0.025  # Max 2.5% daily VaR
+    portfolio_var_99: 0.040  # Max 4% extreme VaR
+    sector_var_95: 0.035  # Max 3.5% sector VaR
+    
+  drawdown_limits:
+    warning: -0.10  # -10% drawdown
+    danger: -0.15  # -15% drawdown
+    max_tolerable: -0.20  # -20% max
+    
+  concentration:
+    max_single_position: 0.10  # Max 10% in one stock
+    max_sector: 0.25  # Max 25% in one sector
+    max_country: 0.40  # Max 40% in one country
+    min_diversification: 15  # Min 15 holdings
+
+# Sector Rotation Signals
+sector_rotation:
+  outperformance_threshold: 5.0  # Sector outperforming by >5%
+  underperformance_threshold: -5.0
+  rotation_signal_duration: 20  # Days of outperformance
+  
+  value_growth_spread:
+    extreme_value: -10.0  # Value underperforming by >10%
+    favor_value: -5.0
+    neutral: 0.0
+    favor_growth: 5.0
+    extreme_growth: 10.0
+
+# News Sentiment Thresholds
+sentiment:
+  score_ranges:
+    very_bearish: -100
+    bearish: -30
+    neutral_lower: -10
+    neutral_upper: 10
+    bullish: 30
+    very_bullish: 100
+    
+  article_count:
+    low_coverage: 5  # <5 articles = insufficient data
+    normal_coverage: 10
+    high_coverage: 20  # >20 articles = high confidence
+    
+  confidence:
+    low: 0.5
+    medium: 0.7
+    high: 0.85
+
+# Data Quality Alerts
+data_quality:
+  missing_data:
+    acceptable: 0.05  # <5% missing = OK
+    warning: 0.10  # 5-10% missing = warning
+    critical: 0.20  # >20% missing = critical
+    
+  staleness:
+    fresh: 300  # <5 minutes
+    acceptable: 900  # <15 minutes
+    stale: 3600  # >1 hour = stale
+    critical: 7200  # >2 hours = critical
+    
+  price_anomalies:
+    daily_change_threshold: 0.15  # >15% daily change
+    volume_spike: 5.0  # 5x average volume
+    zero_volume_days: 3  # 3 consecutive zero volume days
+
+# Performance Metrics Thresholds
+performance:
+  sharpe_ratio:
+    poor: 0.5
+    acceptable: 1.0
+    good: 1.5
+    excellent: 2.0
+    
+  information_ratio:
+    poor: 0.25
+    acceptable: 0.5
+    good: 0.75
+    excellent: 1.0
+    
+  win_rate:
+    poor: 0.45  # <45% win rate
+    acceptable: 0.50
+    good: 0.55
+    excellent: 0.60  # >60% win rate
+    
+  max_drawdown:
+    acceptable: -0.10  # -10%
+    concerning: -0.15  # -15%
+    severe: -0.20  # -20%
+    critical: -0.25  # -25%
+
+# Notification Priorities
+notification:
+  critical:
+    - "fragmentation_risk_danger"
+    - "portfolio_var_breach"
+    - "max_drawdown_critical"
+    - "data_quality_critical"
+    
+  high:
+    - "strong_buy_signal"
+    - "strong_sell_signal"
+    - "sector_rotation"
+    - "fragmentation_risk_warning"
+    - "eps_growth_below_target"
+    
+  medium:
+    - "buy_signal"
+    - "take_profit_signal"
+    - "sentiment_extreme"
+    - "data_quality_warning"
+    
+  low:
+    - "hold_signal"
+    - "valuation_update"
+    - "news_update"
+
+# Alert Frequency Limits (avoid spam)
+alert_frequency:
+  critical: 0  # Send immediately
+  high: 3600  # Max 1 per hour
+  medium: 14400  # Max 1 per 4 hours
+  low: 86400  # Max 1 per day
+
+# Backtest Validation Thresholds
+backtest:
+  min_trades: 20  # Minimum 20 trades for statistical significance
+  min_sharpe: 0.5  # Minimum Sharpe ratio
+  max_drawdown: -0.30  # Max tolerable drawdown
+  min_win_rate: 0.45  # Minimum win rate
+  
+  transaction_costs:
+    commission_bps: 5  # 5 bps commission
+    slippage_bps: 2  # 2 bps slippage
+    market_impact_threshold: 0.10  # 10% of ADV

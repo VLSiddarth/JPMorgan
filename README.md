@@ -1,377 +1,488 @@
 # 📊 JPMorgan European Equity Thesis Monitor
 
-> A real-time investment dashboard validating JPMorgan's 2024 European equity overweight thesis
+> A real-time, institutional-grade dashboard tracking JPMorgan’s European equity **overweight** thesis
 
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.31-FF4B4B.svg)](https://streamlit.io)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+---
+
 ## 🎯 Overview
 
-This dashboard provides institutional-grade monitoring and analysis of JPMorgan's 2024 European equity investment thesis. It combines traditional fundamental analysis with machine learning, quantitative backtesting, and alternative data to answer three critical questions:
+This project is a **JPMorgan-grade European equity monitoring system**, designed to validate and continuously track the 2024+ **European equity overweight** thesis.
 
-1. **Is the thesis working?** (CIO View)
-2. **Where is it working?** (PM View)
-3. **Why is it working (or not)?** (Strategist View)
+It combines:
+
+- Multi-source **market & macro data**
+- **Quant signals** (momentum, value, macro regimes)
+- **Risk & attribution analytics**
+- **Backtesting & portfolio simulation**
+- Production patterns (MongoDB, TimescaleDB, Redis, REST API, WebSockets)
+
+All using **open-source / free data sources only** (yfinance, FRED, ECB SDW, NewsAPI, etc.), so it can be run by **students, researchers, and quants** without paid terminals.
+
+We answer three core questions:
+
+1. **Is the thesis working?** – CIO View  
+2. **Where is it working?** – PM View  
+3. **Why is it working (or not)?** – Strategist / Macro View  
+
+---
 
 ## ✨ Key Features
 
-### 📈 Real-Time Monitoring
-- Live tracking of STOXX 600 vs S&P 500 performance
-- 5 key performance indicators (KPIs) with target thresholds
-- Sector and thematic basket performance analysis
+### 📈 Real-Time European vs US Monitoring
 
-### 🤖 AI-Powered Insights
-- **FinBERT sentiment analysis** of European economic news
-- Natural language processing for market sentiment scoring
-- Real-time news aggregation and classification
+- STOXX Europe 600 vs S&P 500 performance (absolute & relative)
+- Sector and thematic basket performance:
+  - GRANOLAS (European mega-caps)
+  - EU Banks
+  - EU Defense
+  - Fiscal beneficiaries
+- Rolling KPIs:
+  - Relative performance (3M, 6M, 12M)
+  - Drawdown, volatility, Sharpe
 
-### 🎯 Trade Signal Generation
-- Automated buy/sell/hold signals based on multiple factors
-- Risk alerts for EU fragmentation and tariff risks
-- Conviction-weighted recommendations with timeframes
+### 🧠 Quant & Factor Analytics
 
-### 📊 Quantitative Backtesting
-- Historical performance validation (2020-present)
-- Strategy vs benchmark comparison
-- Sharpe ratio, drawdown, and win rate analysis
+- **Signals**
+  - Momentum: 1M / 3M / 6M / 12M, risk-adjusted
+  - Value: PE, PB, PS, Dividend Yield, Composite
+  - Macro regime scores (growth, inflation, policy, curve)
+- **Attribution**
+  - Brinson sector / asset attribution
+  - Factor attribution (e.g. Fama-French style)
+  - Sector & factor tilts vs benchmark
 
-### 🔔 Alert System
-- Email notifications for critical signals
-- Customizable alert thresholds
-- HTML-formatted detailed reports
+### 🛡️ Risk Analytics (Institutional-Grade)
 
-### 📉 Factor Analysis
-- Exposure analysis across 5 key factors (Value, Momentum, Quality, Size, Low Vol)
-- Portfolio vs benchmark comparison
-- Factor tilts visualization
+- Value at Risk (VaR) – historical, parametric
+- Conditional VaR (Expected Shortfall)
+- Volatility & max drawdown
+- Beta, tracking error, information ratio
+- Scenario & stress testing (e.g. 2008, COVID, EU fragmentation shocks)
 
-## 🚀 Quick Start
+### 🧪 Backtesting & Portfolio Simulation
 
-### Prerequisites
-```bash
-Python 3.11+
-pip (Python package manager)
-```
+- Daily backtest engine (2020–present)
+- Configurable:
+  - Rebalancing frequency
+  - Transaction costs & slippage
+  - Leverage & shorting constraints
+- Outputs:
+  - Equity curve
+  - Risk-adjusted metrics (Sharpe, Sortino)
+  - Exposure and turnover statistics
 
-### Installation
+### 🔔 Monitoring & Alerts (Planned / Extensible)
 
-1. **Clone the repository:**
-```bash
-git clone https://github.com/yourusername/jpm-dashboard.git
-cd jpm-dashboard
-```
+- Threshold-based alerts on:
+  - EU vs US underperformance
+  - Spread levels (e.g. FR–DE 10Y)
+  - Macro regime switches
+- Email alert integration via SMTP (e.g. Gmail)
 
-2. **Install dependencies:**
-```bash
-pip install -r requirements.txt
-```
+---
 
-3. **Configure API keys:**
-```bash
-cp .env.example .env
-# Edit .env and add your API keys
-```
+## 🧱 High-Level Architecture
 
-4. **Run the dashboard:**
-```bash
-streamlit run app.py
-```
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                     PRESENTATION LAYER                      │
+│  - Streamlit Dashboard (app.py)                            │
+│  - FastAPI REST API (api.py)                               │
+│  - WebSocket Server for live updates (websocket_server.py) │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+┌────────────────────────┴────────────────────────────────────┐
+│                    BUSINESS LOGIC LAYER                     │
+│  - Signals: momentum, value, macro                         │
+│  - Risk: VaR/CVaR, stress tests                            │
+│  - Attribution: sector, factor, returns                    │
+│  - Backtest: portfolio simulation, transaction costs       │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+┌────────────────────────┴────────────────────────────────────┐
+│                        DATA LAYER                           │
+│  - MongoDB       → Documents (snapshots, signals)          │
+│  - TimescaleDB   → Time series (macro, factors)            │
+│  - Redis         → Cache (latest quotes, signals)          │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+┌────────────────────────┴────────────────────────────────────┐
+│                    DATA INGESTION LAYER                     │
+│  - yfinance       → Indices & equities                     │
+│  - FRED           → Macro series                           │
+│  - ECB SDW        → Euro-area statistics                   │
+│  - NewsAPI        → Headlines for sentiment                │
+│  - Validation / Cleaning / Aggregation                     │
+└─────────────────────────────────────────────────────────────┘
 
-5. **Open in browser:**
-```
-http://localhost:8501
-```
-
-## 🔑 API Keys Setup
-
-### Required (Free)
-
-1. **FRED API** (Macro data)
-   - Get key: https://fred.stlouisfed.org/docs/api/api_key.html
-   - Add to `.env`: `FRED_API_KEY=your_key_here`
-
-2. **NewsAPI** (News sentiment)
-   - Get key: https://newsapi.org/register
-   - Free tier: 100 requests/day
-   - Add to `.env`: `NEWSAPI_KEY=your_key_here`
-
-### Optional (For email alerts)
-
-3. **Gmail SMTP** (Email alerts)
-   - Enable 2FA on Gmail
-   - Generate App Password
-   - Add to `.env`:
-```
-     SMTP_EMAIL=your@gmail.com
-     SMTP_PASSWORD=your_app_password
-```
-
-## 📊 Dashboard Views
-
-### 1. 📈 CIO View (Thesis-at-a-Glance)
-**Answer:** Is the JPM thesis working?
-
-- Europe vs US relative performance (3-month rolling)
-- Eurozone 2026 EPS growth consensus
-- EU-US valuation gap (forward P/E)
-- EU fragmentation risk gauge (FR-DE spread)
-- Eurozone credit impulse
-
-### 2. 💼 PM View (Sector & Thematic)
-**Answer:** Where in Europe is the thesis working?
-
-- STOXX 600 sector performance treemap
-- Thematic basket performance:
-  - German Fiscal Play (Siemens, Schneider, Vinci, etc.)
-  - EU Defense (Rheinmetall, BAE Systems, Thales, Leonardo)
-  - GRANOLAS (11 mega-cap stocks)
-  - EU Banks (Unicredit, Santander, BBVA, BNP)
-
-### 3. 🌍 Strategist View (Macro & Policy)
-**Answer:** Why is the thesis working (or not)?
-
-- German GDP forecasts (2026)
-- German IFO Business Climate Index
-- China Caixin Manufacturing PMI
-- U.S. Tariff Risk Tracker
-- EU fragmentation risk analysis
-
-### 4. 🎯 Live Trade Signals
-- Real-time buy/sell/hold recommendations
-- Signal conviction levels (High/Medium/Low)
-- Target allocations and timeframes
-- Historical signal tracking (coming soon)
-
-### 5. 📊 Backtest Performance
-- Strategy performance since 2020
-- Equity curve vs buy-and-hold
-- Risk-adjusted metrics
-- Drawdown analysis
-
-### 6. 📰 News Sentiment
-- AI-powered sentiment analysis
-- Recent article breakdown
-- Sentiment timeline visualization
-- Source attribution
-
-### 7. ⚙️ Settings & Alerts
-- Email alert configuration
-- API key management
-- Data export (JSON/CSV/PDF)
-- Dashboard customization
-
-## 🛠️ Technology Stack
-
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Frontend** | Streamlit 1.31 | Interactive dashboard |
-| **Visualization** | Plotly 5.18 | Dynamic charts & graphs |
-| **Market Data** | yfinance 0.2.35 | Stock prices & fundamentals |
-| **Macro Data** | FRED API | Economic indicators |
-| **News** | NewsAPI | Real-time news articles |
-| **AI/ML** | FinBERT (Transformers) | Sentiment analysis |
-| **Backtesting** | Custom engine | Strategy validation |
-| **Alerts** | SMTP (Gmail) | Email notifications |
-
-## 📁 Project Structure
-```
+🗂 Project Structure (Current Target)
 JPMorganChase/
 │
-├── app.py                      # Main Streamlit dashboard
-├── requirements.txt            # Python dependencies
-├── README.md                   # This file
+├── app.py                     # Streamlit dashboard (CIO/PM/Strategist views)
+├── api.py                     # FastAPI REST API
+├── websocket_server.py        # WebSocket real-time server
+│
+├── README.md                  # Project documentation (this file)
+├── ARCHITECTURE.md            # Detailed system architecture
+├── CONTRIBUTING.md            # Contribution guidelines
+├── LICENSE                    # MIT License
 ├── .env.example               # Environment variables template
-├── .gitignore                 # Git ignore rules
+├── .gitignore
+├── requirements.txt           # Python dependencies
+├── docker-compose.yml         # MongoDB + TimescaleDB + Redis + API
+├── Dockerfile                 # App container
 │
-├── data/                       # Cached data files
-│   └── dashboard_cache.json
-│
-├── modules/                    # Core functionality
-│   ├── data_loader.py         # Fetch market & macro data
-│   ├── signal_generator.py    # Generate trade signals
-│   ├── backtest_engine.py     # Backtest strategies
-│   ├── sentiment_analyzer.py  # AI sentiment analysis
-│   ├── factor_analysis.py     # Factor exposure calculation
-│   └── alerts.py              # Email alert system
-│
-├── utils/                      # Helper functions
+├── config/
 │   ├── __init__.py
-│   └── helpers.py             # Utility functions
+│   ├── settings.py            # Centralized settings (Pydantic)
+│   ├── data_sources.yml       # Ticker mappings & sources
+│   └── thresholds.yml         # Alert thresholds
 │
-└── assets/                     # Static files (optional)
-    └── custom.css
-```
+├── src/
+│   ├── __init__.py
+│   ├── data/
+│   │   ├── __init__.py
+│   │   ├── connectors/
+│   │   │   ├── __init__.py
+│   │   │   ├── yahoo.py       # yfinance wrapper (done)
+│   │   │   ├── fred.py        # FRED client (planned)
+│   │   │   ├── ecb_sdw.py     # ECB SDW client (planned)
+│   │   │   └── newsapi.py     # News connector (planned)
+│   │   ├── models/
+│   │   │   ├── __init__.py
+│   │   │   ├── market_data.py # Market data schemas (done)
+│   │   │   ├── portfolio.py   # Portfolio schemas (done)
+│   │   │   └── signals.py     # Signal schemas (done)
+│   │   └── repository/
+│   │       ├── __init__.py
+│   │       ├── mongodb_repo.py    # MongoDB ops (done)
+│   │       ├── timescale_repo.py  # TimescaleDB ops (done)
+│   │       └── redis_cache.py     # Redis caching (done)
+│   │
+│   ├── analytics/
+│   │   ├── __init__.py
+│   │   ├── signals/
+│   │   │   ├── __init__.py
+│   │   │   ├── momentum.py        # Momentum signals (done)
+│   │   │   ├── value.py           # Value signals (done)
+│   │   │   └── macro.py           # Macro signals (done)
+│   │   ├── risk/
+│   │   │   ├── __init__.py
+│   │   │   └── risk_analytics.py  # VaR/CVaR, Sharpe, stress (done)
+│   │   ├── attribution/
+│   │   │   ├── __init__.py
+│   │   │   ├── returns.py         # Brinson attribution (done)
+│   │   │   ├── factors.py         # Factor attribution (done)
+│   │   │   └── sector.py          # Sector attribution (done)
+│   │   ├── backtest/
+│   │   │   ├── __init__.py
+│   │   │   ├── portfolio_sim.py   # Portfolio simulator (done)
+│   │   │   └── transaction_cost.py# Transaction cost model (done)
+│   │   ├── sentiment/             # (planned)
+│   │   └── factors/               # (planned)
+│   │
+│   └── utils/                     # Logging, dates, math (planned)
+│
+├── tests/                         # Unit & integration tests (planned)
+├── notebooks/                     # Research & exploration (planned)
+├── scripts/                       # Setup & backfill scripts (planned)
+├── data/                          # Raw/processed/cache/exports
+└── monitoring/                    # Prometheus/Grafana configs (planned)
 
-## 🎓 Academic Use
+🚀 Quick Start
+1️⃣ Prerequisites
 
-This project was developed as part of equity research coursework and demonstrates:
+Python 3.11+
 
-- **Quantitative Analysis**: Factor models, backtesting, performance attribution
-- **Data Science**: API integration, data pipeline, caching strategies
-- **Machine Learning**: NLP sentiment analysis using FinBERT
-- **Software Engineering**: Modular design, clean code, documentation
-- **Financial Theory**: Portfolio construction, risk management, fundamental analysis
+pip (Python package manager)
 
-### Citing This Work
-```bibtex
-@software{jpm_dashboard_2025,
-  author = {Your Name},
-  title = {JPMorgan European Equity Thesis Monitor},
-  year = {2025},
-  url = {https://github.com/yourusername/jpm-dashboard}
+Optional but recommended:
+
+Docker & docker-compose
+
+MongoDB, TimescaleDB, Redis (if not using Docker)
+
+2️⃣ Install Dependencies
+git clone https://github.com/yourusername/JPMorganChase.git
+cd JPMorganChase
+
+python -m venv .venv
+source .venv/bin/activate   # On Windows: .venv\Scripts\activate
+
+pip install -r requirements.txt
+
+3️⃣ Configure Environment
+cp .env.example .env
+# Edit .env and add your keys
+
+
+Minimal .env:
+
+ENVIRONMENT=development
+DEBUG=true
+LOG_LEVEL=INFO
+
+FRED_API_KEY=your_fred_key
+NEWSAPI_KEY=your_newsapi_key
+ALPHA_VANTAGE_KEY=demo   # or your key
+
+MONGODB_URI=mongodb://localhost:27017/jpm_dashboard
+POSTGRES_URI=postgresql://jpm_user:password@localhost:5432/jpm_timeseries
+REDIS_URI=redis://localhost:6379/0
+
+4️⃣ Run via Streamlit
+streamlit run app.py
+
+
+Then open: http://localhost:8501
+
+5️⃣ (Optional) Run Full Stack via Docker
+docker-compose up --build
+
+
+This will start:
+
+MongoDB
+
+TimescaleDB
+
+Redis
+
+FastAPI API
+
+Streamlit dashboard
+
+🔑 Free Data Sources & API Keys
+Required
+
+FRED – macro & rates
+
+Get key: https://fred.stlouisfed.org/docs/api/api_key.html
+
+.env → FRED_API_KEY=your_key_here
+
+NewsAPI – headlines for sentiment
+
+Get key: https://newsapi.org/register
+
+Free: 100 requests/day
+
+.env → NEWSAPI_KEY=your_key_here
+
+Optional (Email Alerts)
+
+Gmail SMTP
+
+SMTP_EMAIL=your@gmail.com
+SMTP_PASSWORD=your_app_password  # Gmail App Password
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+
+📊 Main Dashboard Views (Planned UX)
+1. 📈 CIO View – “Is the Thesis Working?”
+
+STOXX 600 vs S&P 500 relative performance (3M, 6M, 12M)
+
+EU vs US forward P/E spread
+
+FR–DE 10Y yield spread (fragmentation risk proxy)
+
+Macro regime score for Europe (growth/inflation/policy/curve)
+
+High-level risk metrics (vol, drawdown, VaR)
+
+2. 💼 PM View – “Where Is It Working?”
+
+Sector performance heatmap / treemap (STOXX 600 sectors)
+
+Thematic baskets:
+
+GRANOLAS
+
+EU defense
+
+EU banks
+
+Fiscal beneficiaries
+
+Contribution to relative performance by sector & theme
+
+3. 🌍 Strategist View – “Why Is It Working?”
+
+Macro indicators:
+
+Eurozone GDP / PMI
+
+Inflation & core inflation
+
+Yield curve slope
+
+Credit spreads (proxy via indices)
+
+MacroSignal (risk-on vs risk-off) summary
+
+Scenario analysis (e.g., tariff shock, growth slowdown)
+
+4. 🧪 Backtest Performance
+
+Backtest vs benchmark since 2020
+
+Equity curve, drawdowns
+
+Sharpe, Sortino, VaR
+
+Trade & turnover statistics
+
+🧪 Usage Examples (Code)
+
+These examples assume you run them from the repo root with a configured environment.
+
+1️⃣ Load Market Data via Repository + Connector
+from datetime import date
+import pandas as pd
+
+from src.data.connectors.yahoo import YahooMarketDataConnector
+from src.data.models.market_data import MarketDataRequest
+from src.data.repository.mongodb_repo import MongoDBRepository
+from config.settings import settings
+
+# Connector (yfinance)
+connector = YahooMarketDataConnector(delay_seconds=settings.YAHOO_FINANCE_DELAY)
+
+# Request STOXX 600 & S&P 500 (proxy tickers)
+req = MarketDataRequest(
+    symbols=["^STOXX50E", "^GSPC"],
+    start_date=date(2020, 1, 1),
+    end_date=date.today(),
+)
+
+response = connector.fetch_market_data(req)
+
+# Persist to MongoDB
+mongo = MongoDBRepository(uri=settings.MONGODB_URI)
+for symbol, series in response.series.items():
+    mongo.save_price_series(series)
+
+2️⃣ Generate Momentum Signals
+import pandas as pd
+from src.analytics.signals.momentum import MomentumSignalEngine
+from src.data.models.market_data import HistoricalPriceSeries
+
+engine = MomentumSignalEngine()
+
+# Suppose 'series' is HistoricalPriceSeries from MongoDB or connector
+df = series.to_dataframe()
+signals = engine.compute_momentum_signals(df=df, as_of=df.index[-1], symbol=series.symbol)
+
+for name, sp in signals.items():
+    print(name, sp.value, sp.direction, sp.strength)
+
+3️⃣ Run a Simple Portfolio Backtest
+import pandas as pd
+from src.analytics.backtest.portfolio_sim import PortfolioSimulator, BacktestConfig
+
+prices = ...  # DataFrame [dates x symbols]
+
+# Simple equal-weight rebalance monthly
+rebalance_dates = prices.resample("M").last().index
+target_weights = {
+    dt: pd.Series(1.0 / len(prices.columns), index=prices.columns)
+    for dt in rebalance_dates
 }
-```
 
-## 📈 Usage Examples
+config = BacktestConfig(initial_nav=100.0, rebalance_frequency="M")
+sim = PortfolioSimulator(config=config)
+series = sim.run_backtest(prices=prices, target_weights=target_weights)
 
-### Fetch Latest Data
-```python
-from modules.data_loader import DataLoader
+df_perf = series.to_dataframe()
+print(df_perf.tail())
 
-loader = DataLoader()
-data = loader.fetch_all_data()
-print(f"Relative Performance: {data['indices']['relative_performance']:.2f}%")
-```
+4️⃣ Risk Analytics on a Strategy
+import numpy as np
+from src.analytics.risk.risk_analytics import RiskAnalytics
 
-### Generate Trade Signals
-```python
-from modules.signal_generator import SignalGenerator
+returns = df_perf["return_daily"]  # from PortfolioPerformanceSeries
+benchmark_returns = ...            # Series of benchmark daily returns
 
-generator = SignalGenerator()
-signals = generator.generate_signals(data)
+risk = RiskAnalytics(confidence_level=0.95)
+report = risk.generate_risk_report(returns, benchmark_returns)
+print(report)
 
-for signal in signals:
-    print(f"{signal['title']}: {signal['action']}")
-```
+🎓 Academic & Portfolio Use
 
-### Run Backtest
-```python
-from modules.backtest_engine import BacktestEngine
+This project is ideal as a portfolio piece for:
 
-engine = BacktestEngine(start_date='2020-01-01')
-results = engine.run_backtest()
-print(engine.generate_summary())
-```
+Equity research & macro strategy roles
 
-### Analyze Sentiment
-```python
-from modules.sentiment_analyzer import SentimentAnalyzer
+Quant & data science internships
 
-analyzer = SentimentAnalyzer()
-summary = analyzer.get_sentiment_summary()
-print(f"Sentiment Score: {summary['score']:.1f}/100")
-```
+Fintech / trading interviews
 
-## 🚀 Deployment
+It demonstrates:
 
-### Option 1: Streamlit Cloud (Recommended)
+Quant research (factors, signals, backtests)
 
-1. Push code to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your repository
-4. Add API keys in "Secrets" section
-5. Deploy!
+Macro-quant integration (macro regimes → allocation)
 
-Your dashboard will be live at: `https://username-jpm-dashboard.streamlit.app`
+Software engineering discipline (layered architecture, tests, config, Docker)
 
-### Option 2: Heroku
-```bash
-# Create Procfile
-echo "web: streamlit run app.py --server.port=$PORT" > Procfile
+Realistic JPMorgan-style CIO dashboard thinking
 
-# Deploy
-heroku create jpm-dashboard
-git push heroku main
-```
+To cite:
 
-### Option 3: Docker
-```dockerfile
-FROM python:3.11-slim
+@software{jpm_europe_thesis_monitor_2025,
+  author = {V.L. Siddarth},
+  title  = {JPMorgan European Equity Thesis Monitor},
+  year   = {2025},
+  url    = {https://github.com/VLSiddarth/JPMorganChase}
+}
 
-WORKDIR /app
+🤝 Contributing
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+Contributions welcome:
 
-COPY . .
+Fork the repo
 
-EXPOSE 8501
+Create a feature branch:
+git checkout -b feature/amazing-feature
 
-CMD ["streamlit", "run", "app.py"]
-```
-```bash
-docker build -t jpm-dashboard .
-docker run -p 8501:8501 jpm-dashboard
-```
+Commit your changes:
+git commit -m "Add amazing feature"
 
-## 🔧 Troubleshooting
+Push and open a Pull Request
 
-### Common Issues
+Areas to help:
 
-**1. ModuleNotFoundError**
-```bash
-pip install --upgrade -r requirements.txt
-```
+New signal engines (quality, low-vol, size)
 
-**2. FRED API Errors**
-- Check your API key in `.env`
-- Verify key is active at fred.stlouisfed.org
-- Free tier: 120 requests/minute
+Better macro proxies / EU-specific data
 
-**3. Yahoo Finance Data Missing**
-- Some European tickers need exchange suffix (e.g., `SIE.DE`)
-- Try adding `.DE`, `.PA`, `.L`, `.MI` suffixes
-- Use ETFs as proxies if direct access fails
+Factor models (Fama-French Europe, custom factors)
 
-**4. FinBERT Model Download**
-- First run downloads ~400MB model
-- Ensure stable internet connection
-- Model caches in `~/.cache/huggingface/`
+Sentiment module (FinBERT integration)
 
-**5. Email Alerts Not Working**
-- Use Gmail App Password (not regular password)
-- Enable "Less secure app access" if needed
-- Check SMTP settings in `.env`
+Tests & CI (GitHub Actions)
 
-## 📚 Documentation
+📝 License & Disclaimer
 
-- [Streamlit Docs](https://docs.streamlit.io)
-- [Plotly Python](https://plotly.com/python/)
-- [Yahoo Finance API](https://pypi.org/project/yfinance/)
-- [FRED API](https://fred.stlouisfed.org/docs/api/)
-- [FinBERT Paper](https://arxiv.org/abs/1908.10063)
+This project is licensed under the MIT License. See LICENSE
+.
 
-## 🤝 Contributing
+⚠️ Disclaimer
 
-Contributions welcome! Please:
+This is for educational and informational purposes only.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Not investment advice.
 
-## 📝 License
+Not affiliated with JPMorgan Chase & Co.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Past performance is not indicative of future results.
 
-## ⚠️ Disclaimer
-
-**IMPORTANT:** This dashboard is for **educational and informational purposes only**. 
-
-- Not investment advice
-- Not affiliated with JPMorgan Chase & Co.
-- Past performance does not guarantee future results
-- Always do your own research
-- Consult a licensed financial advisor before investing
-
-## 🙏 Acknowledgments
-
-- JPMorgan European Equity Research Team (thesis inspiration)
-- Streamlit team for amazing framework
-- FinBERT authors for sentiment model
-- Open-source community
+Always do your own research and consult a licensed financial advisor.
 
 ## 📧 Contact
 
@@ -382,6 +493,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**⭐ If this project helped you, please consider giving it a star!**
+**⭐ If this project helps you, consider giving it a star and sharing it with other equity research students & quants!**
 
 Built with ❤️ for equity research students worldwide# JPMorgan

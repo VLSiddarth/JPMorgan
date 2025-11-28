@@ -1,13 +1,112 @@
+# ============================================
+# JPMorgan European Equity Thesis Dashboard
+# Production Requirements (Python 3.11+)
+# All FREE data sources (no Bloomberg/Eikon)
+# ============================================
+
+# -------------------------
+# Core Dashboard / Web
+# -------------------------
 streamlit==1.31.0
 plotly==5.18.0
+
+# FastAPI REST API + WebSocket server
+fastapi==0.110.0
+uvicorn[standard]==0.27.0
+websockets==12.0
+aiohttp==3.9.1
+
+# Optional: Dash (if you later add Dash views)
+dash==2.14.2
+
+# -------------------------
+# Data / Analytics Stack
+# -------------------------
 pandas==2.1.4
 numpy==1.26.3
-yfinance==0.2.35
-fredapi==0.5.1
+scipy==1.11.4
+scikit-learn==1.3.2
+
+# -------------------------
+# Free Market & Macro Data
+# -------------------------
+yfinance==0.2.35        # Yahoo Finance wrapper
+fredapi==0.5.1          # FRED macro data
+alpha-vantage==2.3.1    # Alpha Vantage (indices, FX, etc.)
 requests==2.31.0
 beautifulsoup4==4.12.3
+lxml==5.1.0
+
+# If you implement ECB SDW / other HTTP APIs, these are enough
+# (you can also use aiohttp for async calls – already included above)
+
+# -------------------------
+# Databases / Storage
+# -------------------------
+pymongo==4.6.1          # MongoDB (documents, signals, configs)
+psycopg2-binary==2.9.9  # TimescaleDB/PostgreSQL (time-series prices)
+redis==5.0.1            # Redis cache (real-time & session caching)
+sqlalchemy==2.0.25      # Optional ORM / DB utilities
+
+# -------------------------
+# Config / Settings / Utils
+# -------------------------
 python-dotenv==1.0.0
+pyyaml==6.0.1
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Pydantic (models + settings)
+pydantic==2.6.4
+pydantic-settings==2.2.1
+
+# System / health monitoring (used in monitoring/health_check.py)
+psutil==5.9.8
+
+# -------------------------
+# AI / NLP (FinBERT, Sentiment)
+# -------------------------
 transformers==4.36.2
 torch==2.1.2
 sentencepiece==0.1.99
 protobuf==4.25.1
+
+# -------------------------
+# Reporting & Export
+# -------------------------
+reportlab==4.0.8   # PDF generation
+openpyxl==3.1.2    # Excel export
+jinja2==3.1.3      # HTML templates for reports
+pillow==10.1.0     # Image handling in PDFs / reports
+
+# -------------------------
+# Notebooks / Research
+# -------------------------
+jupyterlab==4.0.10
+ipykernel==6.28.0
+nbformat==5.9.2
+
+# -------------------------
+# Testing
+# -------------------------
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-asyncio==0.21.1
+
+# -------------------------
+# Monitoring / Metrics
+# -------------------------
+prometheus-client==0.19.0
+
+# -------------------------
+# Development / Quality
+# -------------------------
+black==23.12.1
+flake8==7.0.0
+mypy==1.8.0
+
+# -------------------------
+# Security (for API auth if needed)
+# -------------------------
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4

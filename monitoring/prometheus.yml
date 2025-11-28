@@ -1,0 +1,163 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  # scrape_timeout: 10s  # default is 10s; uncomment if you want to change
+
+  external_labels:
+    project: "jpm_eu_equity_dashboard"
+    env: "development"
+
+# -------------------------------------------------------------------
+# Alerting: Prometheus → Alertmanager (optional)
+# -------------------------------------------------------------------
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            # If you run alertmanager via docker-compose, use its service name
+            # - "alertmanager:9093"
+            []
+
+# -------------------------------------------------------------------
+# Load alerting rules (your alerts.yml)
+# You can either:
+#   - mount monitoring/alerts.yml directly into /etc/prometheus/alerts.yml
+#   - or adjust this path to match your container mount
+# -------------------------------------------------------------------
+rule_files:
+  - "/etc/prometheus/alerts.yml"
+
+# -------------------------------------------------------------------
+# Scrape configs
+# -------------------------------------------------------------------
+scrape_configs:
+  # ---------------------------------------------------------------
+  # 1. Prometheus self-metrics
+  # ---------------------------------------------------------------
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  # ---------------------------------------------------------------
+  # 2. Streamlit dashboard (app.py)
+  # Expose metrics with something like prometheus_client start_http_server
+  # on port 8502 in the same container (or use a sidecar exporter).
+  # ---------------------------------------------------------------
+  - job_name: "streamlit"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "streamlit:8502"
+        labels:
+          component: "frontend"
+          app: "jpm_eu_equity"
+
+  # ---------------------------------------------------------------
+  # 3. FastAPI REST API (api.py)
+  # Use prometheus-fastapi-instrumentator or custom metrics endpoint.
+  # ---------------------------------------------------------------
+  - job_name: "api"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "api:8000"
+        labels:
+          component: "api"
+          app: "jpm_eu_equity"
+
+  # ---------------------------------------------------------------
+  # 4. WebSocket server (websocket_server.py)
+  # Wrap with prometheus_client or use a sidecar exporter.
+  # ---------------------------------------------------------------
+  - job_name: "websocket_server"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "websocket_server:8765"
+        labels:
+          component: "realtime"
+          app: "jpm_eu_equity"
+
+  # ---------------------------------------------------------------
+  # 5. JPM custom app-level exporter
+  # This is where you expose:
+  #   - jpm_data_last_update_timestamp{type="market|macro|news"}
+  #   - jpm_api_request_errors_total
+  #   - jpm_api_requests_total
+  #   - jpm_signals_generated_total
+  #   - jpm_risk_var_95, jpm_risk_cvar_95
+  #   - jpm_eu_us_relative_perf
+  #   - jpm_fr_de_spread_bps
+  # ---------------------------------------------------------------
+  - job_name: "exporter_jpm"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "jpm-exporter:9101"
+        labels:
+          component: "business_metrics"
+          app: "jpm_eu_equity"
+
+  # ---------------------------------------------------------------
+  # 6. TimescaleDB (PostgreSQL exporter)
+  # Use postgres_exporter container exposing 9187.
+  # ---------------------------------------------------------------
+  - job_name: "timescale"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "timescale-exporter:9187"
+        labels:
+          component: "timescaledb"
+          db: "timeseries"
+          app: "jpm_eu_equity"
+
+  # ---------------------------------------------------------------
+  # 7. MongoDB exporter
+  # E.g. bitnami/mongodb-exporter on 9216.
+  # ---------------------------------------------------------------
+  - job_name: "mongodb"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "mongodb-exporter:9216"
+        labels:
+          component: "mongodb"
+          app: "jpm_eu_equity"
+
+  # ---------------------------------------------------------------
+  # 8. Redis exporter
+  # E.g. oliver006/redis_exporter on 9121.
+  # ---------------------------------------------------------------
+  - job_name: "redis"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "redis-exporter:9121"
+        labels:
+          component: "redis"
+          app: "jpm_eu_equity"
+
+  # ---------------------------------------------------------------
+  # 9. Node exporter (host / container metrics)
+  # Provides node_memory_*, node_filesystem_*, etc.
+  # ---------------------------------------------------------------
+  - job_name: "node"
+    static_configs:
+      - targets:
+          - "node-exporter:9100"
+        labels:
+          component: "infrastructure"
+          app: "jpm_eu_equity"
+
+  # ---------------------------------------------------------------
+  # 10. cAdvisor (container-level metrics)
+  # Optional but useful for container CPU/mem/IO monitoring.
+  # ---------------------------------------------------------------
+  - job_name: "cadvisor"
+    static_configs:
+      - targets:
+          - "cadvisor:8080"
+        labels:
+          component: "containers"
+          app: "jpm_eu_equity"
