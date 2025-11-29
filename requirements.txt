@@ -32,7 +32,7 @@ scikit-learn==1.3.2
 # -------------------------
 yfinance==0.2.35        # Yahoo Finance wrapper
 fredapi==0.5.1          # FRED macro data
-alpha-vantage==2.3.1    # Alpha Vantage (indices, FX, etc.)
+alpha_vantage==2.3.1
 requests==2.31.0
 beautifulsoup4==4.12.3
 lxml==5.1.0
@@ -110,3 +110,20 @@ mypy==1.8.0
 # -------------------------
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+# -------------------------
+# Extra Analytics & Plots
+# -------------------------
+matplotlib==3.8.2
+statsmodels==0.14.1
+
+# Retry utilities for robust connectors
+tenacity==8.2.3
+
+# Email validation for Pydantic models
+email-validator==2.1.0.post1
+
+# FastAPI testing client (optional)
+httpx==0.27.0
+
+# Forms / file uploads in FastAPI (optional)
+python-multipart==0.0.9
